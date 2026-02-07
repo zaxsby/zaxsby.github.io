@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jacob's Burger Tracker</title>
+    <title>Jacob's Food & Fitness Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #000000 0%, #2d2d2d 100%);
         }
-        .burger-icon {
+        .food-icon {
             transition: all 0.3s ease;
         }
-        .burger-icon:hover {
+        .food-icon:hover {
             transform: scale(1.1);
         }
         .progress-bar {
@@ -50,63 +50,78 @@
             height: 300px;
             width: 100%;
         }
-        .toggle-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1rem;
+        .streak-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
         }
-        .toggle-btn {
-            padding: 0.5rem 1rem;
-            background-color: #374151;
-            border: none;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
+        .goal-card {
+            transition: all 0.3s ease;
         }
-        .toggle-btn.active {
-            background-color: #ffffff;
-            color: black;
+        .goal-card:hover {
+            transform: translateY(-2px);
         }
-        .toggle-btn:first-child {
-            border-top-left-radius: 0.5rem;
-            border-bottom-left-radius: 0.5rem;
+        .water-drop {
+            transition: all 0.2s ease;
         }
-        .toggle-btn:last-child {
-            border-top-right-radius: 0.5rem;
-            border-bottom-right-radius: 0.5rem;
+        .water-drop.filled {
+            color: #3b82f6;
+        }
+        .water-drop:hover {
+            transform: scale(1.2);
+        }
+        .category-emoji {
+            font-size: 1.5rem;
         }
     </style>
 </head>
 <body class="gradient-bg text-white min-h-screen font-sans">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
         <!-- Header -->
-        <header class="flex justify-between items-center mb-10">
+        <header class="flex justify-between items-center mb-10 flex-wrap gap-4">
             <div class="flex items-center">
-                <i class="fas fa-hamburger text-3xl mr-3"></i>
-                <h1 class="text-3xl font-bold">JACOB'S BURGER TRACKER</h1>
+                <i class="fas fa-utensils text-3xl mr-3"></i>
+                <div>
+                    <h1 class="text-3xl font-bold">JACOB'S FOOD & FITNESS TRACKER</h1>
+                    <p class="text-gray-400 text-sm">Track your nutrition, weight & exercise journey</p>
+                </div>
             </div>
-            <div class="text-sm">
-                <span id="current-date" class="font-mono"></span>
+            <div class="flex items-center gap-4">
+                <div class="bg-gray-800 rounded-lg px-4 py-2 text-center">
+                    <div class="text-xs text-gray-400">Streak 🔥</div>
+                    <div class="text-xl font-bold" id="streak-days">0 days</div>
+                </div>
+                <div class="text-sm">
+                    <span id="current-date" class="font-mono"></span>
+                </div>
             </div>
         </header>
 
         <!-- Stats Overview -->
         <div class="bg-gray-800 rounded-xl p-6 mb-8 shadow-lg">
-            <div class="grid grid-cols-3 gap-4 text-center">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
                 <div>
-                    <div class="text-gray-400 mb-1">Today's Calories</div>
+                    <div class="text-gray-400 mb-1">Net Calories</div>
                     <div class="text-2xl font-bold" id="today-calories">0</div>
-                    <div class="text-xs text-gray-500">/ <span id="calorie-goal">2500</span> kcal</div>
+                    <div class="text-xs text-gray-500">/ <span id="calorie-goal-display">2500</span> kcal</div>
                 </div>
                 <div>
                     <div class="text-gray-400 mb-1">Current Weight</div>
                     <div class="text-2xl font-bold" id="current-weight">--</div>
-                    <div class="text-xs text-gray-500">lb</div>
+                    <div class="text-xs text-gray-500">kg</div>
                 </div>
                 <div>
-                    <div class="text-gray-400 mb-1">Burgers This Week</div>
-                    <div class="text-2xl font-bold" id="burgers-week">0</div>
-                    <div class="text-xs text-gray-500">/ 7 days</div>
+                    <div class="text-gray-400 mb-1">Food Today</div>
+                    <div class="text-2xl font-bold" id="food-today">0</div>
+                    <div class="text-xs text-gray-500">items</div>
+                </div>
+                <div>
+                    <div class="text-gray-400 mb-1">Exercise</div>
+                    <div class="text-2xl font-bold" id="exercise-today">0</div>
+                    <div class="text-xs text-gray-500">min</div>
+                </div>
+                <div>
+                    <div class="text-gray-400 mb-1">Water</div>
+                    <div class="text-2xl font-bold" id="water-today">0</div>
+                    <div class="text-xs text-gray-500">/ 8 glasses</div>
                 </div>
             </div>
             <div class="mt-4">
@@ -115,46 +130,165 @@
                     <span id="calorie-percentage">0%</span>
                 </div>
                 <div class="w-full bg-gray-700 rounded-full h-2.5">
-                    <div id="calorie-progress" class="bg-white h-2.5 rounded-full progress-bar" style="width: 0%"></div>
+                    <div id="calorie-progress" class="bg-gradient-to-r from-green-500 to-blue-500 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            <!-- Water Tracker -->
+            <div class="mt-6 pt-4 border-t border-gray-700">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-gray-400"><i class="fas fa-tint mr-2"></i>Water Tracker</span>
+                    <button id="reset-water" class="text-xs text-gray-500 hover:text-white">Reset</button>
+                </div>
+                <div class="flex justify-center gap-3 flex-wrap" id="water-tracker">
+                    <!-- Water drops will be generated here -->
                 </div>
             </div>
         </div>
 
-        <!-- Navigation Tabs -->
-        <div class="flex border-b border-gray-700 mb-6">
-            <button class="tab-btn py-2 px-4 font-medium border-b-2 border-transparent hover:border-white transition-all active" data-tab="burgers">Burgers</button>
-            <button class="tab-btn py-2 px-4 font-medium border-b-2 border-transparent hover:border-white transition-all" data-tab="weight">Weight</button>
-            <button class="tab-btn py-2 px-4 font-medium border-b-2 border-transparent hover:border-white transition-all" data-tab="exercise">Exercise</button>
-            <button class="tab-btn py-2 px-4 font-medium border-b-2 border-transparent hover:border-white transition-all" data-tab="graphs">Graphs</button>
+        <!-- Goals Section -->
+        <div class="bg-gray-800 rounded-xl p-6 mb-8 shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold"><i class="fas fa-bullseye mr-2"></i>Your Goals</h2>
+                <button id="edit-goals-btn" class="text-sm text-gray-400 hover:text-white">
+                    <i class="fas fa-cog mr-1"></i> Edit
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="goals-display">
+                <div class="goal-card bg-gray-700 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-1">🍽️</div>
+                    <div class="text-xs text-gray-400">Daily Calories</div>
+                    <div class="font-bold" id="goal-calories">2500</div>
+                </div>
+                <div class="goal-card bg-gray-700 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-1">📉</div>
+                    <div class="text-xs text-gray-400">Target Weight</div>
+                    <div class="font-bold" id="goal-weight">-- kg</div>
+                </div>
+                <div class="goal-card bg-gray-700 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-1">🏃</div>
+                    <div class="text-xs text-gray-400">Weekly Exercise</div>
+                    <div class="font-bold" id="goal-exercise">150 min</div>
+                </div>
+                <div class="goal-card bg-gray-700 rounded-lg p-4 text-center">
+                    <div class="text-2xl mb-1">💧</div>
+                    <div class="text-xs text-gray-400">Daily Water</div>
+                    <div class="font-bold" id="goal-water">8 glasses</div>
+                </div>
+            </div>
+            <!-- Goals Edit Form (Hidden) -->
+            <div id="goals-form" class="hidden mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Daily Calories</label>
+                    <input type="number" id="edit-goal-calories" class="w-full bg-gray-700 rounded px-3 py-2 text-white" value="2500">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Target Weight (kg)</label>
+                    <input type="number" step="0.1" id="edit-goal-weight" class="w-full bg-gray-700 rounded px-3 py-2 text-white" placeholder="e.g. 70">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Weekly Exercise (min)</label>
+                    <input type="number" id="edit-goal-exercise" class="w-full bg-gray-700 rounded px-3 py-2 text-white" value="150">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Daily Water (glasses)</label>
+                    <input type="number" id="edit-goal-water" class="w-full bg-gray-700 rounded px-3 py-2 text-white" value="8">
+                </div>
+                <div class="col-span-full flex gap-2 mt-2">
+                    <button id="save-goals" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save Goals</button>
+                    <button id="cancel-goals" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Cancel</button>
+                </div>
+            </div>
         </div>
 
-        <!-- Burgers Tab -->
-        <div id="burgers" class="tab-content active">
+        <!-- Charts Section -->
+        <div class="bg-gray-800 rounded-xl p-6 mb-8 shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold"><i class="fas fa-chart-line mr-2"></i>Progress Charts</h2>
+                <select id="chart-type" class="bg-gray-700 text-white rounded px-3 py-1 text-sm">
+                    <option value="all">All Data</option>
+                    <option value="food">Food Only</option>
+                    <option value="weight">Weight Only</option>
+                    <option value="exercise">Exercise Only</option>
+                </select>
+            </div>
+            <div class="chart-container">
+                <canvas id="progressChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex border-b border-gray-700 mb-6 overflow-x-auto">
+            <button class="tab-btn py-2 px-4 font-medium border-b-2 border-transparent hover:border-white transition-all active" data-tab="food">
+                <i class="fas fa-utensils mr-2"></i> Food
+            </button>
+            <button class="tab-btn py-2 px-4 font-medium border-b-2 border-transparent hover:border-white transition-all" data-tab="weight">
+                <i class="fas fa-weight-scale mr-2"></i> Weight
+            </button>
+            <button class="tab-btn py-2 px-4 font-medium border-b-2 border-transparent hover:border-white transition-all" data-tab="exercise">
+                <i class="fas fa-fire mr-2"></i> Exercise
+            </button>
+            <button class="tab-btn py-2 px-4 font-medium border-b-2 border-transparent hover:border-white transition-all" data-tab="history">
+                <i class="fas fa-history mr-2"></i> History
+            </button>
+        </div>
+
+        <!-- Food Tab -->
+        <div id="food" class="tab-content active">
             <div class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
-                <h2 class="text-xl font-bold mb-4">Add Burger</h2>
-                <form id="burger-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <h2 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle mr-2"></i>Add Food Item</h2>
+                <form id="food-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-1">
+                        <label class="block text-gray-400 mb-1">Food Name</label>
+                        <input type="text" id="food-name" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white" placeholder="e.g. Chicken Salad" required>
+                    </div>
                     <div>
-                        <label class="block text-gray-400 mb-1">Burger Name</label>
-                        <input type="text" id="burger-name" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white" placeholder="e.g. Double Cheeseburger" required>
+                        <label class="block text-gray-400 mb-1">Category</label>
+                        <select id="food-category" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white">
+                            <option value="breakfast">🌅 Breakfast</option>
+                            <option value="lunch">🌞 Lunch</option>
+                            <option value="dinner">🌙 Dinner</option>
+                            <option value="snack">🍿 Snack</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">Calories</label>
-                        <input type="number" id="burger-calories" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white" placeholder="kcal" required>
+                        <input type="number" id="food-calories" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white" placeholder="kcal" required>
                     </div>
                     <div class="flex items-end">
                         <button type="submit" class="bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors w-full">
-                            <i class="fas fa-plus mr-2"></i> Add Burger
+                            <i class="fas fa-plus mr-2"></i> Add Food
                         </button>
                     </div>
                 </form>
             </div>
 
             <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
-                <h2 class="text-xl font-bold mb-4">Today's Burgers</h2>
-                <div id="burger-list" class="space-y-3">
-                    <div class="text-center py-8 text-gray-500" id="no-burgers-message">
-                        <i class="fas fa-hamburger text-4xl mb-3"></i>
-                        <p>No burgers added today</p>
+                <h2 class="text-xl font-bold mb-4"><i class="fas fa-list mr-2"></i>Today's Food Log</h2>
+                <div id="food-list" class="space-y-3">
+                    <div class="text-center py-8 text-gray-500" id="no-food-message">
+                        <i class="fas fa-utensils text-4xl mb-3"></i>
+                        <p>No food added today</p>
+                    </div>
+                </div>
+                <!-- Meal Summary -->
+                <div class="mt-6 pt-4 border-t border-gray-700" id="meal-summary">
+                    <div class="grid grid-cols-4 gap-2 text-center text-sm">
+                        <div class="bg-gray-700 rounded p-2">
+                            <div class="text-gray-400">🌅 Break</div>
+                            <div class="font-bold" id="breakfast-cal">0</div>
+                        </div>
+                        <div class="bg-gray-700 rounded p-2">
+                            <div class="text-gray-400">🌞 Lunch</div>
+                            <div class="font-bold" id="lunch-cal">0</div>
+                        </div>
+                        <div class="bg-gray-700 rounded p-2">
+                            <div class="text-gray-400">🌙 Dinner</div>
+                            <div class="font-bold" id="dinner-cal">0</div>
+                        </div>
+                        <div class="bg-gray-700 rounded p-2">
+                            <div class="text-gray-400">🍿 Snacks</div>
+                            <div class="font-bold" id="snack-cal">0</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -163,11 +297,11 @@
         <!-- Weight Tab -->
         <div id="weight" class="tab-content">
             <div class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
-                <h2 class="text-xl font-bold mb-4">Track Weight</h2>
+                <h2 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle mr-2"></i>Track Weight</h2>
                 <form id="weight-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-gray-400 mb-1">Weight (lb)</label>
-                        <input type="number" step="0.1" id="weight-input" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white" placeholder="e.g. 165.5" required>
+                        <label class="block text-gray-400 mb-1">Weight (kg)</label>
+                        <input type="number" step="0.1" id="weight-input" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white" placeholder="e.g. 75.5" required>
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">Date</label>
@@ -182,11 +316,28 @@
             </div>
 
             <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
-                <h2 class="text-xl font-bold mb-4">Weight History</h2>
+                <h2 class="text-xl font-bold mb-4"><i class="fas fa-history mr-2"></i>Weight History</h2>
                 <div id="weight-history" class="space-y-3">
                     <div class="text-center py-8 text-gray-500">
                         <i class="fas fa-weight-scale text-4xl mb-3"></i>
                         <p>No weight data recorded</p>
+                    </div>
+                </div>
+                <!-- Weight Stats -->
+                <div class="mt-6 pt-4 border-t border-gray-700" id="weight-stats">
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div class="text-sm text-gray-400">Total Change</div>
+                            <div class="text-xl font-bold" id="weight-change">--</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">Weekly Average</div>
+                            <div class="text-xl font-bold" id="weekly-avg">--</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">To Goal</div>
+                            <div class="text-xl font-bold" id="weight-to-goal">--</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -195,22 +346,31 @@
         <!-- Exercise Tab -->
         <div id="exercise" class="tab-content">
             <div class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
-                <h2 class="text-xl font-bold mb-4">Add Exercise</h2>
-                <form id="exercise-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
+                <h2 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle mr-2"></i>Add Exercise</h2>
+                <form id="exercise-form" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div class="md:col-span-2">
                         <label class="block text-gray-400 mb-1">Exercise</label>
                         <input type="text" id="exercise-name" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white" placeholder="e.g. Running" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Type</label>
+                        <select id="exercise-type" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white">
+                            <option value="cardio">🏃 Cardio</option>
+                            <option value="strength">💪 Strength</option>
+                            <option value="flexibility">🧘 Flexibility</option>
+                            <option value="sports">⚽ Sports</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">Duration (min)</label>
                         <input type="number" id="exercise-duration" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white" placeholder="Minutes" required>
                     </div>
                     <div>
-                        <label class="block text-gray-400 mb-1">Calories Burned</label>
+                        <label class="block text-gray-400 mb-1">Calories</label>
                         <input type="number" id="exercise-calories" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white" placeholder="kcal" required>
                     </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors w-full">
+                    <div class="md:col-span-5 flex justify-end">
+                        <button type="submit" class="bg-white text-black px-6 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors">
                             <i class="fas fa-fire mr-2"></i> Add Exercise
                         </button>
                     </div>
@@ -218,75 +378,125 @@
             </div>
 
             <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
-                <h2 class="text-xl font-bold mb-4">Today's Exercises</h2>
+                <h2 class="text-xl font-bold mb-4"><i class="fas fa-list mr-2"></i>Today's Exercises</h2>
                 <div id="exercise-list" class="space-y-3">
                     <div class="text-center py-8 text-gray-500">
                         <i class="fas fa-heartbeat text-4xl mb-3"></i>
                         <p>No exercises recorded today</p>
                     </div>
                 </div>
+                <!-- Exercise Summary -->
+                <div class="mt-6 pt-4 border-t border-gray-700" id="exercise-summary">
+                    <div class="grid grid-cols-4 gap-2 text-center text-sm">
+                        <div class="bg-gray-700 rounded p-2">
+                            <div class="text-gray-400">🏃 Cardio</div>
+                            <div class="font-bold" id="cardio-min">0 min</div>
+                        </div>
+                        <div class="bg-gray-700 rounded p-2">
+                            <div class="text-gray-400">💪 Strength</div>
+                            <div class="font-bold" id="strength-min">0 min</div>
+                        </div>
+                        <div class="bg-gray-700 rounded p-2">
+                            <div class="text-gray-400">🧘 Flex</div>
+                            <div class="font-bold" id="flexibility-min">0 min</div>
+                        </div>
+                        <div class="bg-gray-700 rounded p-2">
+                            <div class="text-gray-400">⚽ Sports</div>
+                            <div class="font-bold" id="sports-min">0 min</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Graphs Tab -->
-        <div id="graphs" class="tab-content">
-            <div class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
-                <h2 class="text-xl font-bold mb-4">Data Visualization</h2>
-                
-                <div class="toggle-container mb-4">
-                    <button class="toggle-btn active" data-graph="weight">Weight</button>
-                    <button class="toggle-btn" data-graph="calories">Calories</button>
-                    <button class="toggle-btn" data-graph="burgers">Burgers</button>
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold"><i class="fas fa-calendar-alt mr-2"></i>Full History</h2>
+                    <div class="flex gap-2">
+                        <button id="export-data" class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">
+                            <i class="fas fa-download mr-1"></i> Export
+                        </button>
+                        <button id="clear-all-data" class="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700">
+                            <i class="fas fa-trash mr-1"></i> Clear All
+                        </button>
+                    </div>
                 </div>
                 
-                <div class="mb-4">
-                    <label class="block text-gray-400 mb-2">Time Period</label>
-                    <select id="time-period" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white">
-                        <option value="7">Last 7 Days</option>
-                        <option value="14">Last 14 Days</option>
-                        <option value="30">Last 30 Days</option>
-                        <option value="90">Last 90 Days</option>
-                        <option value="all">All Time</option>
-                    </select>
+                <!-- Date Filter -->
+                <div class="flex gap-4 mb-4">
+                    <div>
+                        <label class="text-xs text-gray-400">From</label>
+                        <input type="date" id="history-from" class="bg-gray-700 rounded px-3 py-1 text-white w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400">To</label>
+                        <input type="date" id="history-to" class="bg-gray-700 rounded px-3 py-1 text-white w-full">
+                    </div>
+                    <div class="flex items-end">
+                        <button id="filter-history" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Filter</button>
+                    </div>
                 </div>
-                
-                <div class="chart-container">
-                    <canvas id="data-chart"></canvas>
+
+                <div class="space-y-4" id="full-history-list">
+                    <p class="text-gray-500 text-center py-8">Select date range to view history</p>
                 </div>
             </div>
         </div>
 
         <!-- Weekly Summary -->
         <div class="bg-gray-800 rounded-xl p-6 mt-8 shadow-lg">
-            <h2 class="text-xl font-bold mb-4">Weekly Burger Summary</h2>
+            <h2 class="text-xl font-bold mb-4"><i class="fas fa-calendar-week mr-2"></i>Weekly Food Summary</h2>
             <div class="grid grid-cols-7 gap-2">
                 <div class="text-center">
                     <div class="text-xs text-gray-400">Mon</div>
-                    <div class="h-24 bg-gray-700 rounded mt-1 flex items-center justify-center burger-day" data-day="0">0</div>
+                    <div class="h-24 bg-gray-700 rounded mt-1 flex flex-col items-center justify-center food-day cursor-pointer" data-day="1">
+                        <span class="text-lg font-bold day-count">0</span>
+                        <span class="text-xs text-gray-400 day-cal">0</span>
+                    </div>
                 </div>
                 <div class="text-center">
                     <div class="text-xs text-gray-400">Tue</div>
-                    <div class="h-24 bg-gray-700 rounded mt-1 flex items-center justify-center burger-day" data-day="1">0</div>
+                    <div class="h-24 bg-gray-700 rounded mt-1 flex flex-col items-center justify-center food-day cursor-pointer" data-day="2">
+                        <span class="text-lg font-bold day-count">0</span>
+                        <span class="text-xs text-gray-400 day-cal">0</span>
+                    </div>
                 </div>
                 <div class="text-center">
                     <div class="text-xs text-gray-400">Wed</div>
-                    <div class="h-24 bg-gray-700 rounded mt-1 flex items-center justify-center burger-day" data-day="2">0</div>
+                    <div class="h-24 bg-gray-700 rounded mt-1 flex flex-col items-center justify-center food-day cursor-pointer" data-day="3">
+                        <span class="text-lg font-bold day-count">0</span>
+                        <span class="text-xs text-gray-400 day-cal">0</span>
+                    </div>
                 </div>
                 <div class="text-center">
                     <div class="text-xs text-gray-400">Thu</div>
-                    <div class="h-24 bg-gray-700 rounded mt-1 flex items-center justify-center burger-day" data-day="3">0</div>
+                    <div class="h-24 bg-gray-700 rounded mt-1 flex flex-col items-center justify-center food-day cursor-pointer" data-day="4">
+                        <span class="text-lg font-bold day-count">0</span>
+                        <span class="text-xs text-gray-400 day-cal">0</span>
+                    </div>
                 </div>
                 <div class="text-center">
                     <div class="text-xs text-gray-400">Fri</div>
-                    <div class="h-24 bg-gray-700 rounded mt-1 flex items-center justify-center burger-day" data-day="4">0</div>
+                    <div class="h-24 bg-gray-700 rounded mt-1 flex flex-col items-center justify-center food-day cursor-pointer" data-day="5">
+                        <span class="text-lg font-bold day-count">0</span>
+                        <span class="text-xs text-gray-400 day-cal">0</span>
+                    </div>
                 </div>
                 <div class="text-center">
                     <div class="text-xs text-gray-400">Sat</div>
-                    <div class="h-24 bg-gray-700 rounded mt-1 flex items-center justify-center burger-day" data-day="5">0</div>
+                    <div class="h-24 bg-gray-700 rounded mt-1 flex flex-col items-center justify-center food-day cursor-pointer" data-day="6">
+                        <span class="text-lg font-bold day-count">0</span>
+                        <span class="text-xs text-gray-400 day-cal">0</span>
+                    </div>
                 </div>
                 <div class="text-center">
                     <div class="text-xs text-gray-400">Sun</div>
-                    <div class="h-24 bg-gray-700 rounded mt-1 flex items-center justify-center burger-day" data-day="6">0</div>
+                    <div class="h-24 bg-gray-700 rounded mt-1 flex flex-col items-center justify-center food-day cursor-pointer" data-day="0">
+                        <span class="text-lg font-bold day-count">0</span>
+                        <span class="text-xs text-gray-400 day-cal">0</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -309,52 +519,185 @@
             button.addEventListener('click', () => {
                 const tabId = button.getAttribute('data-tab');
                 
-                // Update active tab button
-                tabButtons.forEach(btn => btn.classList.remove('active', 'border-white'));
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active', 'border-white');
+                    btn.classList.add('border-transparent');
+                });
                 button.classList.add('active', 'border-white');
                 
-                // Show corresponding tab content
                 tabContents.forEach(content => content.classList.remove('active'));
                 document.getElementById(tabId).classList.add('active');
-                
-                // If graphs tab is selected, update the chart
-                if (tabId === 'graphs') {
-                    updateChart();
-                }
             });
         });
 
         // Data storage
-        let burgers = JSON.parse(localStorage.getItem('burgers')) || [];
+        let foodItems = JSON.parse(localStorage.getItem('foodItems')) || [];
         let weights = JSON.parse(localStorage.getItem('weights')) || [];
         let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
-        const calorieGoal = 2500;
+        let waterData = JSON.parse(localStorage.getItem('waterData')) || {};
+        let goals = JSON.parse(localStorage.getItem('goals')) || {
+            calories: 2500,
+            weight: null,
+            exercise: 150,
+            water: 8
+        };
 
         // Chart instance
-        let dataChart = null;
+        let progressChart = null;
 
-        // Burger form submission
-        document.getElementById('burger-form').addEventListener('submit', function(e) {
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('weight-date').value = today.toISOString().split('T')[0];
+            document.getElementById('history-from').value = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            document.getElementById('history-to').value = today.toISOString().split('T')[0];
+            
+            // Load burgers into food items if migrating
+            const oldBurgers = JSON.parse(localStorage.getItem('burgers')) || [];
+            if (oldBurgers.length > 0 && foodItems.length === 0) {
+                foodItems = oldBurgers.map(b => ({
+                    ...b,
+                    category: 'lunch'
+                }));
+                localStorage.setItem('foodItems', JSON.stringify(foodItems));
+                localStorage.removeItem('burgers');
+            }
+            
+            updateGoalsDisplay();
+            initWaterTracker();
+            updateFoodList();
+            updateWeightHistory();
+            updateExerciseList();
+            updateStats();
+            updateWeeklySummary();
+            initChart();
+            updateStreak();
+            loadHistory();
+        });
+
+        // Goals Management
+        function updateGoalsDisplay() {
+            document.getElementById('goal-calories').textContent = goals.calories;
+            document.getElementById('goal-weight').textContent = goals.weight ? goals.weight + ' kg' : '-- kg';
+            document.getElementById('goal-exercise').textContent = goals.exercise + ' min';
+            document.getElementById('goal-water').textContent = goals.water + ' glasses';
+            document.getElementById('calorie-goal-display').textContent = goals.calories;
+        }
+
+        document.getElementById('edit-goals-btn').addEventListener('click', () => {
+            document.getElementById('goals-display').classList.add('hidden');
+            document.getElementById('goals-form').classList.remove('hidden');
+            document.getElementById('edit-goal-calories').value = goals.calories;
+            document.getElementById('edit-goal-weight').value = goals.weight || '';
+            document.getElementById('edit-goal-exercise').value = goals.exercise;
+            document.getElementById('edit-goal-water').value = goals.water;
+        });
+
+        document.getElementById('cancel-goals').addEventListener('click', () => {
+            document.getElementById('goals-display').classList.remove('hidden');
+            document.getElementById('goals-form').classList.add('hidden');
+        });
+
+        document.getElementById('save-goals').addEventListener('click', () => {
+            goals.calories = parseInt(document.getElementById('edit-goal-calories').value) || 2500;
+            goals.weight = parseFloat(document.getElementById('edit-goal-weight').value) || null;
+            goals.exercise = parseInt(document.getElementById('edit-goal-exercise').value) || 150;
+            goals.water = parseInt(document.getElementById('edit-goal-water').value) || 8;
+            localStorage.setItem('goals', JSON.stringify(goals));
+            updateGoalsDisplay();
+            document.getElementById('goals-display').classList.remove('hidden');
+            document.getElementById('goals-form').classList.add('hidden');
+            updateStats();
+            updateWeightStats();
+        });
+
+        // Water Tracker
+        function initWaterTracker() {
+            const todayKey = today.toISOString().split('T')[0];
+            const tracker = document.getElementById('water-tracker');
+            tracker.innerHTML = '';
+            
+            const todayWater = waterData[todayKey] || 0;
+            
+            for (let i = 0; i < goals.water; i++) {
+                const drop = document.createElement('button');
+                drop.className = `water-drop text-3xl ${i < todayWater ? 'filled' : 'text-gray-600'}`;
+                drop.innerHTML = '<i class="fas fa-tint"></i>';
+                drop.addEventListener('click', () => toggleWater(i + 1));
+                tracker.appendChild(drop);
+            }
+            
+            document.getElementById('water-today').textContent = todayWater;
+        }
+
+        function toggleWater(target) {
+            const todayKey = today.toISOString().split('T')[0];
+            const current = waterData[todayKey] || 0;
+            waterData[todayKey] = current === target ? target - 1 : target;
+            localStorage.setItem('waterData', JSON.stringify(waterData));
+            initWaterTracker();
+            updateStreak();
+        }
+
+        document.getElementById('reset-water').addEventListener('click', () => {
+            const todayKey = today.toISOString().split('T')[0];
+            waterData[todayKey] = 0;
+            localStorage.setItem('waterData', JSON.stringify(waterData));
+            initWaterTracker();
+        });
+
+        // Streak Calculator
+        function updateStreak() {
+            const dates = Object.keys(waterData).sort();
+            let streak = 0;
+            const todayKey = today.toISOString().split('T')[0];
+            const yesterdayKey = new Date(today.getTime() - 86400000).toISOString().split('T')[0];
+            
+            if (waterData[todayKey] >= goals.water) {
+                streak = 1;
+                let checkDate = yesterdayKey;
+                while (waterData[checkDate] >= goals.water) {
+                    streak++;
+                    checkDate = new Date(new Date(checkDate).getTime() - 86400000).toISOString().split('T')[0];
+                }
+            } else if (waterData[yesterdayKey] >= goals.water) {
+                streak = 1;
+                let checkDate = new Date(today.getTime() - 2 * 86400000).toISOString().split('T')[0];
+                while (waterData[checkDate] >= goals.water) {
+                    streak++;
+                    checkDate = new Date(new Date(checkDate).getTime() - 86400000).toISOString().split('T')[0];
+                }
+            }
+            
+            document.getElementById('streak-days').textContent = streak + (streak === 1 ? ' day' : ' days');
+        }
+
+        // Food form submission
+        document.getElementById('food-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const name = document.getElementById('burger-name').value;
-            const calories = parseInt(document.getElementById('burger-calories').value);
+            const name = document.getElementById('food-name').value;
+            const calories = parseInt(document.getElementById('food-calories').value);
+            const category = document.getElementById('food-category').value;
             const date = today.toISOString().split('T')[0];
+            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             
-            const burger = {
+            const foodItem = {
                 id: Date.now(),
                 name,
                 calories,
-                date
+                category,
+                date,
+                time
             };
             
-            burgers.push(burger);
-            localStorage.setItem('burgers', JSON.stringify(burgers));
+            foodItems.push(foodItem);
+            localStorage.setItem('foodItems', JSON.stringify(foodItems));
             
             this.reset();
-            updateBurgerList();
+            updateFoodList();
             updateStats();
             updateWeeklySummary();
+            updateChart();
         });
 
         // Weight form submission
@@ -377,6 +720,7 @@
             document.getElementById('weight-date').value = today.toISOString().split('T')[0];
             updateWeightHistory();
             updateStats();
+            updateChart();
         });
 
         // Exercise form submission
@@ -384,6 +728,7 @@
             e.preventDefault();
             
             const name = document.getElementById('exercise-name').value;
+            const type = document.getElementById('exercise-type').value;
             const duration = parseInt(document.getElementById('exercise-duration').value);
             const calories = parseInt(document.getElementById('exercise-calories').value);
             const date = today.toISOString().split('T')[0];
@@ -391,6 +736,7 @@
             const exercise = {
                 id: Date.now(),
                 name,
+                type,
                 duration,
                 calories,
                 date
@@ -402,46 +748,70 @@
             this.reset();
             updateExerciseList();
             updateStats();
+            updateWeeklySummary();
+            updateChart();
         });
 
-        // Update burger list
-        function updateBurgerList() {
-            const burgerList = document.getElementById('burger-list');
-            const todayBurgers = burgers.filter(burger => burger.date === today.toISOString().split('T')[0]);
+        // Update food list
+        function updateFoodList() {
+            const foodList = document.getElementById('food-list');
+            const todayFood = foodItems.filter(item => item.date === today.toISOString().split('T')[0]);
             
-            if (todayBurgers.length === 0) {
-                burgerList.innerHTML = `
-                    <div class="text-center py-8 text-gray-500" id="no-burgers-message">
-                        <i class="fas fa-hamburger text-4xl mb-3"></i>
-                        <p>No burgers added today</p>
+            // Meal category totals
+            const meals = { breakfast: 0, lunch: 0, dinner: 0, snack: 0 };
+            todayFood.forEach(item => meals[item.category] += item.calories);
+            
+            document.getElementById('breakfast-cal').textContent = meals.breakfast;
+            document.getElementById('lunch-cal').textContent = meals.lunch;
+            document.getElementById('dinner-cal').textContent = meals.dinner;
+            document.getElementById('snack-cal').textContent = meals.snack;
+            
+            if (todayFood.length === 0) {
+                foodList.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-utensils text-4xl mb-3"></i>
+                        <p>No food added today</p>
                     </div>
                 `;
                 return;
             }
             
-            document.getElementById('no-burgers-message')?.remove();
+            // Sort by time
+            const sortedFood = todayFood.sort((a, b) => a.time.localeCompare(b.time));
             
-            burgerList.innerHTML = todayBurgers.map(burger => `
-                <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center" data-id="${burger.id}">
-                    <div>
-                        <div class="font-medium">${burger.name}</div>
-                        <div class="text-sm text-gray-400">${burger.calories} kcal</div>
+            foodList.innerHTML = sortedFood.map(item => {
+                const categoryEmojis = {
+                    breakfast: '🌅',
+                    lunch: '🌞',
+                    dinner: '🌙',
+                    snack: '🍿'
+                };
+                
+                return `
+                    <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center" data-id="${item.id}">
+                        <div class="flex items-center">
+                            <span class="text-xl mr-3">${categoryEmojis[item.category]}</span>
+                            <div>
+                                <div class="font-medium">${item.name}</div>
+                                <div class="text-sm text-gray-400">${item.calories} kcal • ${item.time}</div>
+                            </div>
+                        </div>
+                        <button class="delete-food text-gray-400 hover:text-red-400" data-id="${item.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
-                    <button class="delete-burger text-gray-400 hover:text-white" data-id="${burger.id}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
             
-            // Add delete event listeners
-            document.querySelectorAll('.delete-burger').forEach(button => {
+            document.querySelectorAll('.delete-food').forEach(button => {
                 button.addEventListener('click', function() {
                     const id = parseInt(this.getAttribute('data-id'));
-                    burgers = burgers.filter(burger => burger.id !== id);
-                    localStorage.setItem('burgers', JSON.stringify(burgers));
-                    updateBurgerList();
+                    foodItems = foodItems.filter(item => item.id !== id);
+                    localStorage.setItem('foodItems', JSON.stringify(foodItems));
+                    updateFoodList();
                     updateStats();
                     updateWeeklySummary();
+                    updateChart();
                 });
             });
         }
@@ -457,26 +827,74 @@
                         <p>No weight data recorded</p>
                     </div>
                 `;
+                updateWeightStats();
                 return;
             }
             
-            // Sort by date (newest first)
             const sortedWeights = [...weights].sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            weightHistory.innerHTML = sortedWeights.map(entry => `
-                <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center">
-                    <div>
-                        <div class="font-medium">${entry.weight} lb</div>
-                        <div class="text-sm text-gray-400">${new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+            weightHistory.innerHTML = sortedWeights.map((entry, index) => {
+                const prev = sortedWeights[index + 1];
+                const change = prev ? (entry.weight - prev.weight).toFixed(1) : null;
+                const changeClass = change > 0 ? 'text-red-400' : (change < 0 ? 'text-green-400' : 'text-gray-400');
+                
+                return `
+                    <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <div class="font-medium">${entry.weight} kg</div>
+                            <div class="text-sm text-gray-400">${new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                        </div>
+                        ${change !== null ? `<span class="${changeClass} text-sm">${change > 0 ? '+' : ''}${change} kg</span>` : '<span class="text-gray-500 text-sm">First entry</span>'}
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+            
+            updateWeightStats();
+        }
+
+        function updateWeightStats() {
+            if (weights.length < 2) {
+                document.getElementById('weight-change').textContent = '--';
+                document.getElementById('weekly-avg').textContent = '--';
+                document.getElementById('weight-to-goal').textContent = '--';
+                return;
+            }
+            
+            const sorted = [...weights].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const totalChange = (sorted[sorted.length - 1].weight - sorted[0].weight).toFixed(1);
+            const changeClass = totalChange > 0 ? 'text-red-400' : 'text-green-400';
+            document.getElementById('weight-change').innerHTML = `<span class="${changeClass}">${totalChange > 0 ? '+' : ''}${totalChange} kg</span>`;
+            
+            // Weekly average (last 7 days)
+            const weekAgo = new Date(today.getTime() - 7 * 86400000).toISOString().split('T')[0];
+            const weekEntries = sorted.filter(w => w.date >= weekAgo);
+            if (weekEntries.length > 0) {
+                const avg = (weekEntries.reduce((s, w) => s + w.weight, 0) / weekEntries.length).toFixed(1);
+                document.getElementById('weekly-avg').textContent = avg + ' kg';
+            }
+            
+            // To goal
+            if (goals.weight) {
+                const current = sorted[sorted.length - 1].weight;
+                const toGoal = (goals.weight - current).toFixed(1);
+                const toGoalClass = toGoal < 0 ? 'text-red-400' : 'text-green-400';
+                document.getElementById('weight-to-goal').innerHTML = `<span class="${toGoalClass}">${toGoal > 0 ? '+' : ''}${toGoal} kg</span>`;
+            }
         }
 
         // Update exercise list
         function updateExerciseList() {
             const exerciseList = document.getElementById('exercise-list');
-            const todayExercises = exercises.filter(exercise => exercise.date === today.toISOString().split('T')[0]);
+            const todayExercises = exercises.filter(ex => ex.date === today.toISOString().split('T')[0]);
+            
+            // Type totals
+            const types = { cardio: 0, strength: 0, flexibility: 0, sports: 0 };
+            todayExercises.forEach(ex => types[ex.type] += ex.duration);
+            
+            document.getElementById('cardio-min').textContent = types.cardio + ' min';
+            document.getElementById('strength-min').textContent = types.strength + ' min';
+            document.getElementById('flexibility-min').textContent = types.flexibility + ' min';
+            document.getElementById('sports-min').textContent = types.sports + ' min';
             
             if (todayExercises.length === 0) {
                 exerciseList.innerHTML = `
@@ -488,60 +906,73 @@
                 return;
             }
             
-            exerciseList.innerHTML = todayExercises.map(exercise => `
-                <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center" data-id="${exercise.id}">
-                    <div>
-                        <div class="font-medium">${exercise.name}</div>
-                        <div class="text-sm text-gray-400">${exercise.duration} min • ${exercise.calories} kcal burned</div>
+            const typeEmojis = {
+                cardio: '🏃',
+                strength: '💪',
+                flexibility: '🧘',
+                sports: '⚽'
+            };
+            
+            exerciseList.innerHTML = todayExercises.map(ex => `
+                <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center" data-id="${ex.id}">
+                    <div class="flex items-center">
+                        <span class="text-xl mr-3">${typeEmojis[ex.type]}</span>
+                        <div>
+                            <div class="font-medium">${ex.name}</div>
+                            <div class="text-sm text-gray-400">${ex.duration} min • ${ex.calories} kcal burned</div>
+                        </div>
                     </div>
-                    <button class="delete-exercise text-gray-400 hover:text-white" data-id="${exercise.id}">
+                    <button class="delete-exercise text-gray-400 hover:text-red-400" data-id="${ex.id}">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
             `).join('');
             
-            // Add delete event listeners
             document.querySelectorAll('.delete-exercise').forEach(button => {
                 button.addEventListener('click', function() {
                     const id = parseInt(this.getAttribute('data-id'));
-                    exercises = exercises.filter(exercise => exercise.id !== id);
+                    exercises = exercises.filter(ex => ex.id !== id);
                     localStorage.setItem('exercises', JSON.stringify(exercises));
                     updateExerciseList();
                     updateStats();
+                    updateChart();
                 });
             });
         }
 
         // Update stats
         function updateStats() {
-            // Today's burgers and calories
-            const todayBurgers = burgers.filter(burger => burger.date === today.toISOString().split('T')[0]);
-            const todayCalories = todayBurgers.reduce((sum, burger) => sum + burger.calories, 0);
+            const todayKey = today.toISOString().split('T')[0];
+            const todayFood = foodItems.filter(item => item.date === todayKey);
+            const todayCalories = todayFood.reduce((sum, item) => sum + item.calories, 0);
             
-            // Today's exercises
-            const todayExercises = exercises.filter(exercise => exercise.date === today.toISOString().split('T')[0]);
-            const burnedCalories = todayExercises.reduce((sum, exercise) => sum + exercise.calories, 0);
+            const todayExercises = exercises.filter(ex => ex.date === todayKey);
+            const burnedCalories = todayExercises.reduce((sum, ex) => sum + ex.calories, 0);
+            const exerciseMinutes = todayExercises.reduce((sum, ex) => sum + ex.duration, 0);
             
-            // Net calories
             const netCalories = todayCalories - burnedCalories;
-            const percentage = Math.min(Math.round((netCalories / calorieGoal) * 100), 100);
+            const percentage = Math.min(Math.round((netCalories / goals.calories) * 100), 100);
             
-            // Update UI
             document.getElementById('today-calories').textContent = netCalories;
-            document.getElementById('calorie-percentage').textContent = `${percentage}%`;
-            document.getElementById('calorie-progress').style.width = `${percentage}%`;
+            document.getElementById('calorie-percentage').textContent = percentage + '%';
             
-            // Burgers this week
-            const weekStart = new Date(today);
-            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-            const burgersThisWeek = burgers.filter(burger => {
-                const burgerDate = new Date(burger.date);
-                return burgerDate >= weekStart && burgerDate <= today;
-            }).length;
+            // Color based on progress
+            const progressBar = document.getElementById('calorie-progress');
+            progressBar.style.width = percentage + '%';
             
-            document.getElementById('burgers-week').textContent = burgersThisWeek;
+            if (percentage < 50) {
+                progressBar.className = 'h-2.5 rounded-full progress-bar bg-gradient-to-r from-green-500 to-green-400';
+            } else if (percentage < 90) {
+                progressBar.className = 'h-2.5 rounded-full progress-bar bg-gradient-to-r from-yellow-500 to-orange-500';
+            } else if (percentage <= 100) {
+                progressBar.className = 'h-2.5 rounded-full progress-bar bg-gradient-to-r from-orange-500 to-green-500';
+            } else {
+                progressBar.className = 'h-2.5 rounded-full progress-bar bg-red-500';
+            }
             
-            // Current weight (most recent entry)
+            document.getElementById('food-today').textContent = todayFood.length;
+            document.getElementById('exercise-today').textContent = exerciseMinutes;
+            
             if (weights.length > 0) {
                 const sortedWeights = [...weights].sort((a, b) => new Date(b.date) - new Date(a.date));
                 document.getElementById('current-weight').textContent = sortedWeights[0].weight;
@@ -551,245 +982,305 @@
         // Update weekly summary
         function updateWeeklySummary() {
             const weekStart = new Date(today);
-            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1); // Monday
             
-            const burgerDays = [0, 0, 0, 0, 0, 0, 0];
+            const foodDays = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+            const foodCals = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
             
-            burgers.forEach(burger => {
-                const burgerDate = new Date(burger.date);
-                if (burgerDate >= weekStart && burgerDate <= today) {
-                    const dayIndex = burgerDate.getDay(); // 0 (Sun) to 6 (Sat)
-                    burgerDays[dayIndex]++;
+            foodItems.forEach(item => {
+                const itemDate = new Date(item.date);
+                if (itemDate >= weekStart && itemDate <= today) {
+                    const dayIndex = itemDate.getDay();
+                    foodDays[dayIndex]++;
+                    foodCals[dayIndex] += item.calories;
                 }
             });
             
-            document.querySelectorAll('.burger-day').forEach(dayElement => {
+            document.querySelectorAll('.food-day').forEach(dayElement => {
                 const dayIndex = parseInt(dayElement.getAttribute('data-day'));
-                const count = burgerDays[dayIndex];
+                dayElement.querySelector('.day-count').textContent = foodDays[dayIndex];
+                dayElement.querySelector('.day-cal').textContent = foodCals[dayIndex] + ' cal';
                 
-                dayElement.textContent = count;
-                
-                // Visual indicator based on burger count
-                if (count === 0) {
-                    dayElement.className = 'h-24 bg-gray-700 rounded mt-1 flex items-center justify-center burger-day';
-                } else if (count <= 2) {
-                    dayElement.className = 'h-24 bg-gray-600 rounded mt-1 flex items-center justify-center burger-day';
-                } else if (count <= 4) {
-                    dayElement.className = 'h-24 bg-gray-500 rounded mt-1 flex items-center justify-center burger-day';
+                if (foodDays[dayIndex] === 0) {
+                    dayElement.className = 'h-24 bg-gray-700 rounded mt-1 flex flex-col items-center justify-center food-day cursor-pointer';
+                } else if (foodDays[dayIndex] <= 3) {
+                    dayElement.className = 'h-24 bg-gray-600 rounded mt-1 flex flex-col items-center justify-center food-day cursor-pointer';
                 } else {
-                    dayElement.className = 'h-24 bg-gray-400 rounded mt-1 flex items-center justify-center burger-day';
+                    dayElement.className = 'h-24 bg-gray-500 rounded mt-1 flex flex-col items-center justify-center food-day cursor-pointer';
                 }
             });
         }
 
-        // Update chart
-        function updateChart() {
-            const graphType = document.querySelector('.toggle-btn.active').getAttribute('data-graph');
-            const timePeriod = document.getElementById('time-period').value;
+        // Chart.js Implementation
+        function initChart() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
             
-            let labels = [];
-            let data = [];
-            let label = '';
-            let backgroundColor = 'rgba(255, 255, 255, 0.8)';
-            let borderColor = 'rgba(255, 255, 255, 1)';
-            
-            const endDate = new Date();
-            let startDate = new Date();
-            
-            if (timePeriod === 'all') {
-                // Find the earliest date in the data
-                startDate = new Date(Math.min(
-                    ...burgers.map(b => new Date(b.date).getTime()),
-                    ...weights.map(w => new Date(w.date).getTime()),
-                    ...exercises.map(e => new Date(e.date).getTime())
-                ));
-                
-                if (startDate.getTime() === Infinity) {
-                    startDate = new Date();
-                    startDate.setDate(startDate.getDate() - 7); // Default to 7 days if no data
-                }
-            } else {
-                startDate.setDate(startDate.getDate() - parseInt(timePeriod));
-            }
-            
-            // Generate date labels
-            const dateArray = [];
-            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-                dateArray.push(new Date(d));
-            }
-            
-            labels = dateArray.map(date => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-            
-            // Prepare data based on graph type
-            switch(graphType) {
-                case 'weight':
-                    label = 'Weight (lb)';
-                    backgroundColor = 'rgba(75, 192, 192, 0.2)';
-                    borderColor = 'rgba(75, 192, 192, 1)';
-                    
-                    // Sort weights by date
-                    const sortedWeights = [...weights].sort((a, b) => new Date(a.date) - new Date(b.date));
-                    
-                    // Create a map of weight by date for easy lookup
-                    const weightMap = new Map();
-                    sortedWeights.forEach(entry => {
-                        weightMap.set(entry.date, entry.weight);
-                    });
-                    
-                    // Fill data array with weights for each date
-                    data = dateArray.map(date => {
-                        const dateStr = date.toISOString().split('T')[0];
-                        return weightMap.has(dateStr) ? weightMap.get(dateStr) : null;
-                    });
-                    break;
-                    
-                case 'calories':
-                    label = 'Calories';
-                    backgroundColor = 'rgba(255, 99, 132, 0.2)';
-                    borderColor = 'rgba(255, 99, 132, 1)';
-                    
-                    // Create a map of calories by date
-                    const calorieMap = new Map();
-                    
-                    // Sum burger calories
-                    burgers.forEach(burger => {
-                        const date = burger.date;
-                        if (!calorieMap.has(date)) {
-                            calorieMap.set(date, { consumed: 0, burned: 0 });
-                        }
-                        calorieMap.get(date).consumed += burger.calories;
-                    });
-                    
-                    // Sum exercise calories
-                    exercises.forEach(exercise => {
-                        const date = exercise.date;
-                        if (!calorieMap.has(date)) {
-                            calorieMap.set(date, { consumed: 0, burned: 0 });
-                        }
-                        calorieMap.get(date).burned += exercise.calories;
-                    });
-                    
-                    // Calculate net calories for each date
-                    data = dateArray.map(date => {
-                        const dateStr = date.toISOString().split('T')[0];
-                        if (calorieMap.has(dateStr)) {
-                            const dayCalories = calorieMap.get(dateStr);
-                            return dayCalories.consumed - dayCalories.burned;
-                        }
-                        return null;
-                    });
-                    break;
-                    
-                case 'burgers':
-                    label = 'Burgers';
-                    backgroundColor = 'rgba(255, 206, 86, 0.2)';
-                    borderColor = 'rgba(255, 206, 86, 1)';
-                    
-                    // Count burgers per day
-                    const burgerMap = new Map();
-                    burgers.forEach(burger => {
-                        const date = burger.date;
-                        burgerMap.set(date, (burgerMap.get(date) || 0) + 1);
-                    });
-                    
-                    // Fill data array with burger counts
-                    data = dateArray.map(date => {
-                        const dateStr = date.toISOString().split('T')[0];
-                        return burgerMap.has(dateStr) ? burgerMap.get(dateStr) : 0;
-                    });
-                    break;
-            }
-            
-            // Get or create chart canvas
-            const ctx = document.getElementById('data-chart').getContext('2d');
-            
-            // Destroy previous chart if it exists
-            if (dataChart) {
-                dataChart.destroy();
-            }
-            
-            // Create new chart
-            dataChart = new Chart(ctx, {
+            progressChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
-                    datasets: [{
-                        label: label,
-                        data: data,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor,
-                        borderWidth: 2,
-                        tension: 0.1,
-                        fill: true,
-                        pointBackgroundColor: 'rgba(255, 255, 255, 1)',
-                        pointBorderColor: borderColor,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
+                    labels: [],
+                    datasets: []
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: graphType === 'burgers',
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            }
-                        }
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
                     },
                     plugins: {
                         legend: {
-                            labels: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            }
+                            display: true,
+                            labels: { color: 'white' }
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: 'rgba(255, 255, 255, 0.9)',
-                            bodyColor: 'rgba(255, 255, 255, 0.7)',
-                            borderColor: 'rgba(255, 255, 255, 0.2)',
-                            borderWidth: 1
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: 'white',
+                            bodyColor: 'white'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'gray' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            ticks: { color: 'gray' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         }
                     }
                 }
             });
+            
+            updateChart();
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set default date for weight form
-            document.getElementById('weight-date').value = today.toISOString().split('T')[0];
+        function updateChart() {
+            if (!progressChart) return;
             
-            // Load data
-            updateBurgerList();
-            updateWeightHistory();
-            updateExerciseList();
-            updateStats();
-            updateWeeklySummary();
+            const chartType = document.getElementById('chart-type').value;
+            const days = 14;
+            const labels = [];
+            const foodData = [];
+            const weightData = [];
+            const exerciseData = [];
             
-            // Graph toggle buttons
-            document.querySelectorAll('.toggle-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
+            for (let i = days - 1; i >= 0; i--) {
+                const d = new Date(today.getTime() - i * 86400000);
+                const dateStr = d.toISOString().split('T')[0];
+                labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                
+                // Food calories
+                const dayFood = foodItems.filter(f => f.date === dateStr);
+                const foodCals = dayFood.reduce((s, f) => s + f.calories, 0);
+                foodData.push(foodCals);
+                
+                // Exercise calories
+                const dayEx = exercises.filter(e => e.date === dateStr);
+                const exCals = dayEx.reduce((s, e) => s + e.calories, 0);
+                exerciseData.push(exCals);
+                
+                // Weight (latest before or on this date)
+                const relevantWeights = weights.filter(w => w.date <= dateStr);
+                if (relevantWeights.length > 0) {
+                    const latest = relevantWeights.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                    weightData.push(latest.weight);
+                } else {
+                    weightData.push(null);
+                }
+            }
+            
+            const datasets = [];
+            
+            if (chartType === 'all' || chartType === 'food') {
+                datasets.push({
+                    label: 'Food Calories',
+                    data: foodData,
+                    borderColor: '#fbbf24',
+                    backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                    tension: 0.4,
+                    yAxisID: 'y'
+                });
+            }
+            
+            if (chartType === 'all' || chartType === 'exercise') {
+                datasets.push({
+                    label: 'Exercise Burned',
+                    data: exerciseData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    yAxisID: 'y'
+                });
+            }
+            
+            if (chartType === 'all' || chartType === 'weight') {
+                datasets.push({
+                    label: 'Weight (kg)',
+                    data: weightData,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4,
+                    yAxisID: 'y1'
+                });
+            }
+            
+            progressChart.data.labels = labels;
+            progressChart.data.datasets = datasets;
+            
+            // Configure scales based on data types
+            const scales = {
+                x: {
+                    ticks: { color: 'gray' },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
+                },
+                y: {
+                    type: 'linear',
+                    display: chartType !== 'weight',
+                    position: 'left',
+                    ticks: { color: 'gray' },
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    title: { display: true, text: 'Calories', color: 'gray' }
+                }
+            };
+            
+            if (chartType === 'all' || chartType === 'weight') {
+                scales.y1 = {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    ticks: { color: '#10b981' },
+                    grid: { drawOnChartArea: false },
+                    title: { display: true, text: 'Weight (kg)', color: '#10b981' }
+                };
+            }
+            
+            progressChart.options.scales = scales;
+            progressChart.update();
+        }
+
+        document.getElementById('chart-type').addEventListener('change', updateChart);
+
+        // History Tab
+        function loadHistory() {
+            document.getElementById('filter-history').addEventListener('click', filterHistory);
+            document.getElementById('export-data').addEventListener('click', exportData);
+            document.getElementById('clear-all-data').addEventListener('click', clearAllData);
+        }
+
+        function filterHistory() {
+            const fromDate = document.getElementById('history-from').value;
+            const toDate = document.getElementById('history-to').value;
+            const list = document.getElementById('full-history-list');
+            
+            if (!fromDate || !toDate) {
+                list.innerHTML = '<p class="text-red-400 text-center">Please select both dates</p>';
+                return;
+            }
+            
+            const allItems = [
+                ...foodItems.map(f => ({ ...f, type: 'food', display: `${f.name} (${f.calories} cal)`, icon: '🍽️', time: f.time })),
+                ...weights.map(w => ({ ...w, type: 'weight', display: `${w.weight} kg`, icon: '⚖️' })),
+                ...exercises.map(e => ({ ...e, type: 'exercise', display: `${e.name} (${e.duration} min, ${e.calories} cal)`, icon: '🔥' }))
+            ].filter(item => item.date >= fromDate && item.date <= toDate)
+             .sort((a, b) => new Date(b.date + ' ' + (b.time || '')) - new Date(a.date + ' ' + (a.time || '')));
+            
+            if (allItems.length === 0) {
+                list.innerHTML = '<p class="text-gray-500 text-center py-8">No entries found for this date range</p>';
+                return;
+            }
+            
+            list.innerHTML = allItems.map(item => `
+                <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center">
+                    <div class="flex items-center">
+                        <span class="text-2xl mr-3">${item.icon}</span>
+                        <div>
+                            <div class="font-medium">${item.display}</div>
+                            <div class="text-sm text-gray-400">${new Date(item.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}${item.time ? ' • ' + item.time : ''}</div>
+                        </div>
+                    </div>
+                    <button class="delete-history-item text-gray-400 hover:text-red-400" data-type="${item.type}" data-id="${item.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+            
+            document.querySelectorAll('.delete-history-item').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    const id = parseInt(this.getAttribute('data-id'));
+                    
+                    if (type === 'food') {
+                        foodItems = foodItems.filter(i => i.id !== id);
+                        localStorage.setItem('foodItems', JSON.stringify(foodItems));
+                    } else if (type === 'weight') {
+                        weights = weights.filter(w => w.id !== id);
+                        localStorage.setItem('weights', JSON.stringify(weights));
+                    } else if (type === 'exercise') {
+                        exercises = exercises.filter(e => e.id !== id);
+                        localStorage.setItem('exercises', JSON.stringify(exercises));
+                    }
+                    
+                    filterHistory();
+                    updateFoodList();
+                    updateWeightHistory();
+                    updateExerciseList();
+                    updateStats();
                     updateChart();
                 });
             });
+        }
+
+        function exportData() {
+            const data = {
+                exportDate: new Date().toISOString(),
+                goals,
+                foodItems,
+                weights,
+                exercises,
+                waterData,
+                summary: {
+                    totalFoodItems: foodItems.length,
+                    totalWeightEntries: weights.length,
+                    totalExerciseSessions: exercises.length
+                }
+            };
             
-            // Time period selector
-            document.getElementById('time-period').addEventListener('change', updateChart);
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `food-tracker-export-${today.toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ WARNING: This will delete ALL your data permanently. Are you sure?')) {
+                if (confirm('Really? This cannot be undone.')) {
+                    localStorage.removeItem('foodItems');
+                    localStorage.removeItem('weights');
+                    localStorage.removeItem('exercises');
+                    localStorage.removeItem('waterData');
+                    localStorage.removeItem('goals');
+                    location.reload();
+                }
+            }
+        }
+
+        // Click on weekly day cells
+        document.querySelectorAll('.food-day').forEach(day => {
+            day.addEventListener('click', function() {
+                const dayIndex = this.getAttribute('data-day');
+                const daysOffset = (today.getDay() - parseInt(dayIndex) + 7) % 7;
+                const targetDate = new Date(today.getTime() - daysOffset * 86400000).toISOString().split('T')[0];
+                
+                document.getElementById('history-from').value = targetDate;
+                document.getElementById('history-to').value = targetDate;
+                document.querySelector('[data-tab="history"]').click();
+                filterHistory();
+            });
         });
     </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=Wadbott123/jacob-burger-tracker" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
 </html>
